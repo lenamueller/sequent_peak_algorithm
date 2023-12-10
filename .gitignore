@@ -1,0 +1,6 @@
+.pytest_cache/*
+sequent_peak_algorithm/__pycache__/*
+tests/__pycache__/*
+
+venv/*
+examples/*
