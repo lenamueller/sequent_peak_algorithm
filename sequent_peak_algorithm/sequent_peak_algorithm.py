@@ -3,114 +3,95 @@ from collections import namedtuple
 import matplotlib.pyplot as plt
 
     
-def _storage(q_in: list[float], q_out: list[float]) -> None | list[float]:
+def _storage(q_in: list[float], q_out: list[float]) -> list[float]:
     """Calculate the storage as the difference between inflow and outflow."""
-    try:    
-        if np.nan in q_in or np.nan in q_out:
-            return None
-        else:
-            return [x-y for x, y in zip(q_in, q_out)]
-    except TypeError:
-        return None
+    return [x-y for x, y in zip(q_in, q_out)]
     
-def _cumulative_storage(storage: list[float]) -> None | list[float]:
+def _cumulative_storage(storage: list[float]) -> list[float]:
     """Calculate the cumulative storage."""
-    try:
-        if np.nan in storage:
-            return None
-        else:
-            return [sum(storage[:i]) for i in range(1, len(storage)+1)]
-    except TypeError:
-        return None
+    return [sum(storage[:i]) for i in range(1, len(storage)+1)]
     
-def _maxima(cum_storage: list[float]) -> None | tuple[list[float], list[int]]:
+def _maxima(cum_storage: list[float]) -> tuple[list[float], list[int]]:
     """
     A maximum is a value greater than its predecessor and 
     its successor and all following maxima must be greater 
     than the previous one.
     """
-    try:
-        if np.nan in cum_storage:
-            return None 
-        else:
-            max_vals: list[float] = []
-            max_indices: list[int] = []
-            for i in range(1, len(cum_storage)-1):
-                if cum_storage[i-1] < cum_storage[i] and cum_storage[i] > cum_storage[i+1]:
-                    if len(max_vals) == 0:
-                        max_vals.append(cum_storage[i])
-                        max_indices.append(i)
-                    else:
-                        if cum_storage[i] > max_vals[-1]:
-                            max_vals.append(cum_storage[i])
-                            max_indices.append(i)
-            return max_vals, max_indices
+    assert cum_storage != [], "Cumulative storage is empty!"
     
-    except TypeError:
-        return None
-
+    max_vals: list[float] = []
+    max_indices: list[int] = []
+    for i in range(1, len(cum_storage)-1):
+        if cum_storage[i-1] < cum_storage[i] and cum_storage[i] > cum_storage[i+1]:
+            if len(max_vals) == 0:
+                max_vals.append(cum_storage[i])
+                max_indices.append(i)
+            else:
+                if cum_storage[i] > max_vals[-1]:
+                    max_vals.append(cum_storage[i])
+                    max_indices.append(i)
+    return max_vals, max_indices
+    
 def _minima(
         cum_storage: list[float],
         max_indices: list[int]
-        ) -> None | tuple[list[float], list[int]]:  
+        ) -> tuple[list[float], list[int]]:  
     """
     A minimum is the smallest value between two maxima which
     locations are given as max_indices.
     """
-    try:
-        if np.nan in cum_storage or cum_storage == [] or max_indices == []:
-            return None
-        else:
-            min_vals: list[float] = []
-            min_indices: list[int] = []
-            for i in range(len(max_indices)-1):
-                min_val = min(cum_storage[max_indices[i]:max_indices[i+1]])
-                min_vals.append(min_val)
-                min_index = np.argmin(cum_storage[max_indices[i]:max_indices[i+1]]) + max_indices[i]
-                min_indices.append(min_index.astype(int))
-        return min_vals, min_indices
+    assert cum_storage != [], "Cumulative storage is empty!"
+    assert max_indices != [], "Maxima indices are empty!"
     
-    except TypeError:
-        return None
-
+    min_vals: list[float] = []
+    min_indices: list[int] = []
+    for i in range(len(max_indices)-1):
+        min_val = min(cum_storage[max_indices[i]:max_indices[i+1]])
+        print(min_val)
+        min_vals.append(min_val)
+        min_index = np.argmin(cum_storage[max_indices[i]:max_indices[i+1]]) + max_indices[i]
+        min_indices.append(min_index.astype(int))
+    return min_vals, min_indices
+    
 def _capacity(
         max_vals: list[float],
         max_indices: list[int],
         min_vals: list[float],
         min_indices: list[int]
-        ) -> None | tuple[float, list[float], list[int], list[float], list[int]]:
+        ) -> tuple[float, list[float], list[int], list[float], list[int]]:
     """Calculate capacity and its location."""
     
-    try:
-        if np.nan in max_vals or np.nan in max_indices or np.nan in min_vals or np.nan in min_indices \
-            or max_vals == [] or max_indices == [] or min_vals == [] or min_indices == []:
-            return None
-        else:
-            # Remove last maximum because no minimum can follow.
-            max_vals = max_vals[:-1]
-            max_indices = max_indices[:-1]
-            
-            # Calculate storage differences between consecutive maxima and minima.
-            diff: list[float] = [i-j for i, j in zip(max_vals, min_vals)]
-
-            # Get maximum difference and its location.
-            cap: float = max(diff)
-            cap_indices: list[int] = [i for i, j in enumerate(diff) if j == cap]
-            
-            # Get corresponding minima and maxima and their locations.
-            cap_min_vals: list[float] = [min_vals[i] for i in cap_indices]
-            cap_min_indices: list[int] = [min_indices[i] for i in cap_indices]
-            cap_max_vals: list[float] = [max_vals[i] for i in cap_indices]
-            cap_max_indices: list[int] = [max_indices[i] for i in cap_indices]
-        return cap, cap_min_vals, cap_min_indices, cap_max_vals, cap_max_indices
+    assert max_vals != [], "Maxima values are empty!"
+    assert max_indices != [], "Maxima indices are empty!"
+    assert min_vals != [], "Minima values are empty!"
+    assert min_indices != [], "Minima indices are empty!"
     
-    except TypeError:
-        return None
+    # Remove last maximum because no minimum can follow.
+    max_vals = max_vals[:-1]
+    max_indices = max_indices[:-1]
+    
+    # Calculate storage differences between consecutive maxima and minima.
+    diff: list[float] = [i-j for i, j in zip(max_vals, min_vals)]
+
+    # Get maximum difference and its location.
+    cap: float = max(diff)
+    cap_indices: list[int] = [i for i, j in enumerate(diff) if j == cap]
+    
+    # Get corresponding minima and maxima and their locations.
+    cap_min_vals: list[float] = [min_vals[i] for i in cap_indices]
+    cap_min_indices: list[int] = [min_indices[i] for i in cap_indices]
+    cap_max_vals: list[float] = [max_vals[i] for i in cap_indices]
+    cap_max_indices: list[int] = [max_indices[i] for i in cap_indices]
+    return cap, cap_min_vals, cap_min_indices, cap_max_vals, cap_max_indices
 
 def spa(
         q_in: list[float],
         q_out: list[float]
         ):
+    
+    assert len(q_in) == len(q_out), "Inflow and outflow must have the same length!"
+    assert len(q_in) != 0, "Inflow is empty!"
+    assert len(q_out) != 0, "Outflow is empty!"
     
     # Calculate storage.
     storage = _storage(
@@ -179,6 +160,12 @@ def sim(
         capacity: float,
         ):
     """Run storage simulation."""
+    
+    assert len(q_in) == len(q_out), "Inflow and outflow must have the same length!"
+    assert len(q_in) != 0, "Inflow is empty!"
+    assert len(q_out) != 0, "Outflow is empty!"
+    assert initial_storage >= 0, "Initial storage must be greater or equal to zero!"
+    assert capacity > 0, "Capacity must be greater than zero!"
     
     q_out_real = []
     storage = []
