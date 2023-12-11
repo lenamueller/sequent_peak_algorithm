@@ -2,5 +2,7 @@
 sequent_peak_algorithm/__pycache__/*
 tests/__pycache__/*
 
+dist/*
+sequent_peak_algorithm.egg-info
+
 venv/*
-examples/*
