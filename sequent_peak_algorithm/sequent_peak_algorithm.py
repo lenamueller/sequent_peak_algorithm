@@ -1,6 +1,7 @@
 import numpy as np
 from collections import namedtuple
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 
     
 def _storage(q_in: list[float], q_out: list[float]) -> list[float]:
@@ -47,7 +48,6 @@ def _minima(
     min_indices: list[int] = []
     for i in range(len(max_indices)-1):
         min_val = min(cum_storage[max_indices[i]:max_indices[i+1]])
-        print(min_val)
         min_vals.append(min_val)
         min_index = np.argmin(cum_storage[max_indices[i]:max_indices[i+1]]) + max_indices[i]
         min_indices.append(min_index.astype(int))
@@ -87,7 +87,7 @@ def _capacity(
 def spa(
         q_in: list[float],
         q_out: list[float]
-        ):
+        ) -> namedtuple:
     
     assert len(q_in) == len(q_out), "Inflow and outflow must have the same length!"
     assert len(q_in) != 0, "Inflow is empty!"
@@ -158,7 +158,7 @@ def sim(
         q_out: list[float],
         initial_storage: float,
         capacity: float,
-        ):
+        ) -> namedtuple:
     """Run storage simulation."""
     
     assert len(q_in) == len(q_out), "Inflow and outflow must have the same length!"
@@ -249,7 +249,7 @@ colors = {
     "green": "#55a630",
 }
 
-def spa_plot(res):
+def spa_plot(res) -> Figure:
     """Plot the results of the sequent peak algorithm."""
     
     fig, ax = plt.subplots(nrows=4, ncols=1, figsize=(10, 8), sharex=True, 
@@ -289,7 +289,7 @@ def spa_plot(res):
     
     return fig
     
-def sim_plot(res):
+def sim_plot(res) -> Figure:
     """Plot the results from the storage simulation."""
     
     fig, ax = plt.subplots(nrows=5, ncols=1, figsize=(10, 10), sharex=True, 
