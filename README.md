@@ -11,7 +11,7 @@ Python implementation of the Sequent Peak Algorithm for the design and simulatio
 ```
 pip install numpy==1.26.2
 pip install matplotlib==3.8.2
-pip install sequent-peak-algorithm==0.0.2
+pip install sequent-peak-algorithm==0.0.3
 ```
 
 # Usage example
