@@ -6,3 +6,5 @@ dist/*
 sequent_peak_algorithm.egg-info
 
 venv/*
+
+docs/*
