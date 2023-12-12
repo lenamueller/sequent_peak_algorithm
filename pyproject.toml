@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sequent_peak_algorithm"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
   { name="Lena Marie Müller", email="lenamariemue@gmail.com" },
 ]

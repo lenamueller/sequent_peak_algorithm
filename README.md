@@ -9,34 +9,25 @@ Python implementation of the Sequent Peak Algorithm for the design and simulatio
 # Installation with requirements
 
 ```
-pip install numpy==1.26.2
-pip install matplotlib==3.8.2
-pip install sequent-peak-algorithm==0.0.3
+pip install sequent-peak-algorithm==0.0.5
 ```
 
 # Usage example
 
 ```python 
-import pandas as pd
-import matplotlib.pyplot as plt
-import sequent_peak_algorithm.sequent_peak_algorithm as spa
+# 0. Create random input data
+q_in = np.random.rand(100) * 10
+q_out = np.random.rand(100) * 10
 
-
-# 1. Read raw data and extract data to lists
-df = pd.read_csv('examples/example_1_raw_data.csv')
-df = df.iloc[:150]
-months = df["month"].tolist()
-q_in = df["Q_in_hm3"].tolist()
-q_out = df["Q_out_hm3"].tolist()
-
-# 2. Run sequent peak algorithm
+# 1. Run sequent peak algorithm
 res_cap = spa.spa(q_in=q_in, q_out=q_out)
+print("Capacity: ", res_cap.capacity)
 
-# 3. Plot results from sequent peak algorithm
+# 2. Plot results from sequent peak algorithm
 fig_cap = spa.spa_plot(res_cap)
-plt.savefig("examples/example_1_spa.png", dpi=300)
+plt.savefig("example_2_spa.png", dpi=300)
 
-# 4. Simulate reservoir
+# 3. Run storage simulation and explore results
 res_sim = spa.sim(
     q_in=q_in,
     q_out=q_out,
@@ -44,17 +35,17 @@ res_sim = spa.sim(
     capacity=res_cap.capacity
 )
 
-# 5. Plot results from simulation
+# Plot results from storage simulation
 fig_sim = spa.sim_plot(res_sim)
-plt.savefig("examples/example_1_sim.png", dpi=300)
+plt.savefig("example_2_sim.png", dpi=300)
 ```
-For further explanations see the [examples/example_1.ipynb](examples/example_1.ipynb) folder.
+For further explanations see the [examples/](examples/) folder.
 
 #### Sequent Peak Algorithm Visualization
-![examples/example_1_spa.png](examples/example_1_spa.png)
+![examples/example_2_spa.png](examples/example_2_spa.png)
 
 #### Simulation Visualization
-![examples/example_1_sim.png](examples/example_1_sim.png)
+![examples/example_2_sim.png](examples/example_2_sim.png)
 
 # Documentation
 
