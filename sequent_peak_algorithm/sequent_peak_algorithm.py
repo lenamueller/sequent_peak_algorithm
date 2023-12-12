@@ -285,7 +285,6 @@ def spa_plot(res) -> Figure:
         ax[i].set_title(titles[i], **title_kwargs)
     for i in [0, 1, 2]:
         ax[i].set_ylim(top=max(max(res.q_in), max(res.q_out), max(res.storage)*1.3))
-    ax[3].legend(loc="upper left", fontsize=10, frameon=False)
     
     return fig
     
@@ -296,8 +295,7 @@ def sim_plot(res) -> Figure:
                            gridspec_kw={'hspace': 0.4})
     
     titles = ["A. Inflow", "B. Outflow", "C. Real outflow",
-              f"D. Storage (Capacity: {round(res.capacity, 3)}", 
-              "E. Deficit/ Overflow"]
+              "D. Storage", "E. Deficit/ Overflow"]
     
     ax[0].bar(range(len(res.q_in)), res.q_in, color=colors["blue"])
     ax[1].bar(range(len(res.q_out)), res.q_out, color=colors["blue"])
